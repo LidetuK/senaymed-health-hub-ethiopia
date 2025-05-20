@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/sections/Hero';
 import WhySenayMed from '@/components/sections/WhySenayMed';
+import DrugSearch from '@/components/sections/DrugSearch';
 import Features from '@/components/sections/Features';
 import HowItWorks from '@/components/sections/HowItWorks';
 import Testimonials from '@/components/sections/Testimonials';
@@ -17,6 +18,7 @@ const Index: React.FC = () => {
       <main>
         <Hero />
         <WhySenayMed />
+        <DrugSearch />
         <Features />
         <HowItWorks />
         <Testimonials />
