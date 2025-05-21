@@ -148,9 +148,10 @@ const HeroPillOrbit: React.FC = () => {
     <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
       {/* Central Large Pill */}
       <div className="relative z-10 animate-[hero-float_8s_ease-in-out_infinite]">
-        <div className="bg-gradient-to-r from-senay-blue-500 to-senay-teal-500 w-72 h-36 rounded-full flex items-center justify-center shadow-2xl animate-[hero-central-pulse_4s_ease-in-out_infinite]">
-          <div className="bg-white w-64 h-28 rounded-full flex items-center justify-center">
-            <div className="text-transparent bg-clip-text bg-gradient-to-r from-senay-blue-600 to-senay-teal-600 font-bold text-4xl">
+        <div className="bg-gradient-to-r from-senay-blue-500 to-senay-teal-500 w-96 h-48 rounded-full flex items-center justify-center shadow-2xl animate-[hero-central-pulse_4s_ease-in-out_infinite]">
+          <div className="bg-white w-88 h-40 rounded-full flex items-center justify-center">
+            <Pill className="text-senay-blue-600 h-8 w-8 mr-2" />
+            <div className="text-transparent bg-clip-text bg-gradient-to-r from-senay-blue-600 to-senay-teal-600 font-bold text-5xl">
               SenayMed
             </div>
           </div>
