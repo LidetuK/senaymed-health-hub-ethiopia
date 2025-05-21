@@ -9,12 +9,22 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { Check } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { MapPin, AlertTriangle, Check, Info } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Symptom {
   id: string;
   name: string;
   description?: string;
+}
+
+interface Condition {
+  id: string;
+  name: string;
+  matchedSymptoms: number;
+  details?: string;
+  treatment?: string;
 }
 
 const SymptomChecker: React.FC = () => {
@@ -25,6 +35,9 @@ const SymptomChecker: React.FC = () => {
   const [suggestions, setSuggestions] = useState<Symptom[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [possibleConditions, setPossibleConditions] = useState<Condition[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<Condition | null>(null);
+  const { toast } = useToast();
   
   const deepSeekApiKey = "sk-7c6a8a160ab646be9e19793ba72812f4";
 
@@ -129,6 +142,12 @@ const SymptomChecker: React.FC = () => {
       setSelectedSymptoms([...selectedSymptoms, symptomItem]);
       setSymptom('');
       setSuggestions([]);
+      
+      // Show toast notification when symptom is added
+      toast({
+        title: "Symptom Added",
+        description: `"${symptomItem.name}" has been added to your symptom list.`,
+      });
     }
   };
 
@@ -148,6 +167,8 @@ const SymptomChecker: React.FC = () => {
     if (activeTab === 'info' && selectedSymptoms.length > 0) {
       setActiveTab('symptoms');
     } else if (activeTab === 'symptoms') {
+      // Generate possible conditions based on selected symptoms
+      generatePossibleConditions();
       setActiveTab('conditions');
     } else if (activeTab === 'conditions') {
       setActiveTab('details');
@@ -166,6 +187,55 @@ const SymptomChecker: React.FC = () => {
     } else if (activeTab === 'treatment') {
       setActiveTab('details');
     }
+  };
+
+  const generatePossibleConditions = () => {
+    // This would normally call an API, but for now we'll generate mock data
+    // based on the selected symptoms
+    if (selectedSymptoms.length === 0) return;
+    
+    // Example condition data - in real app, this would come from an API
+    const conditions: Condition[] = [
+      {
+        id: '1',
+        name: 'Common Cold',
+        matchedSymptoms: Math.min(selectedSymptoms.length, 3),
+        details: 'The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold. Symptoms typically appear one to three days after exposure to a cold-causing virus and can include runny nose, sore throat, cough, congestion, slight body aches, a mild headache, sneezing, and low-grade fever.',
+        treatment: 'Rest and drink plenty of fluids. Over-the-counter medicines can help ease symptoms but won\'t make your cold go away any faster. Antibiotics are of no use against cold viruses. Try saline nasal drops or sprays, and use a humidifier or cool mist vaporizer in your room.'
+      },
+      {
+        id: '2',
+        name: 'Seasonal Allergies',
+        matchedSymptoms: Math.max(1, Math.floor(selectedSymptoms.length / 2)),
+        details: 'Seasonal allergies, also called hay fever and allergic rhinitis, can make you miserable with symptoms like runny nose, itchy eyes, congestion, and sneezing. Tree pollens in spring, grasses in summer, and weeds in fall can trigger these symptoms in susceptible individuals. Diagnosis often includes skin or blood tests to identify specific allergens.',
+        treatment: 'Avoid known allergens when possible. Consider over-the-counter or prescription antihistamines, decongestants, or nasal corticosteroids. For severe allergies, your doctor might recommend immunotherapy through allergy shots or sublingual tablets.'
+      },
+      {
+        id: '3',
+        name: 'Influenza (Flu)',
+        matchedSymptoms: Math.min(selectedSymptoms.length, 4),
+        details: 'The flu is a contagious respiratory illness caused by influenza viruses that infect the nose, throat, and sometimes the lungs. It can cause mild to severe illness, and at times can lead to death. Flu is different from a cold and usually comes on suddenly. People who have flu often feel some or all of these symptoms: fever, chills, cough, sore throat, runny or stuffy nose, muscle or body aches, headaches, and fatigue.',
+        treatment: 'If diagnosed early (within 48 hours of symptoms), antiviral medications may be prescribed to shorten the duration and reduce severity. Otherwise, rest, fluids, and over-the-counter medications to relieve symptoms are recommended. In high-risk cases, hospitalization may be necessary.'
+      },
+    ];
+    
+    // Randomly sort conditions but ensure at least one condition shows
+    const shuffled = [...conditions].sort(() => 0.5 - Math.random());
+    setPossibleConditions(shuffled.slice(0, Math.min(shuffled.length, 3)));
+  };
+
+  const handleSelectCondition = (condition: Condition) => {
+    setSelectedCondition(condition);
+  };
+
+  const handleFindHospital = () => {
+    toast({
+      title: "Finding Hospitals",
+      description: "Searching for hospitals near your location...",
+    });
+    
+    // In a real app, this would navigate to a hospital finder page or use geolocation
+    console.log("Find hospital location");
   };
 
   const showBodyImage = sex !== '';
@@ -312,16 +382,24 @@ const SymptomChecker: React.FC = () => {
                   <TabsContent value="conditions" className="mt-0">
                     <p className="text-gray-600">Based on your symptoms, here are some possible conditions:</p>
                     <div className="mt-4 space-y-3">
-                      {selectedSymptoms.length > 0 ? (
+                      {possibleConditions.length > 0 ? (
                         <>
-                          <div className="p-3 border rounded-md bg-gray-50">
-                            <h4 className="font-medium">Common Cold</h4>
-                            <p className="text-sm text-gray-600">Matches 3 of your symptoms</p>
-                          </div>
-                          <div className="p-3 border rounded-md bg-gray-50">
-                            <h4 className="font-medium">Seasonal Allergies</h4>
-                            <p className="text-sm text-gray-600">Matches 2 of your symptoms</p>
-                          </div>
+                          {possibleConditions.map(condition => (
+                            <div 
+                              key={condition.id}
+                              className={`p-3 border rounded-md bg-gray-50 cursor-pointer ${selectedCondition?.id === condition.id ? 'ring-2 ring-senay-blue-400' : ''}`}
+                              onClick={() => handleSelectCondition(condition)}
+                            >
+                              <div className="flex justify-between items-center">
+                                <h4 className="font-medium">{condition.name}</h4>
+                                {selectedCondition?.id === condition.id && (
+                                  <Check size={16} className="text-senay-blue-500" />
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600">Matches {condition.matchedSymptoms} of your symptoms</p>
+                            </div>
+                          ))}
+                          <p className="text-xs text-gray-500 mt-2">Select a condition to see more details</p>
                         </>
                       ) : (
                         <p className="text-gray-600">Select symptoms first to see possible conditions.</p>
@@ -330,11 +408,79 @@ const SymptomChecker: React.FC = () => {
                   </TabsContent>
                   
                   <TabsContent value="details" className="mt-0">
-                    <p className="text-gray-600">Additional details will appear after symptoms are selected.</p>
+                    {selectedCondition ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Info size={20} className="text-senay-blue-500" />
+                          <h3 className="text-xl font-medium">{selectedCondition.name} Details</h3>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">{selectedCondition.details}</p>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <h4 className="font-medium mb-2">Matched Symptoms</h4>
+                          <p className="text-gray-600">This condition matches {selectedCondition.matchedSymptoms} of your reported symptoms.</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-6">
+                        <p className="text-gray-600">Please select a condition from the previous step to see details.</p>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setActiveTab('conditions')} 
+                          className="mt-4"
+                        >
+                          Go back to select condition
+                        </Button>
+                      </div>
+                    )}
                   </TabsContent>
                   
                   <TabsContent value="treatment" className="mt-0">
-                    <p className="text-gray-600">Treatment options will be shown based on identified conditions.</p>
+                    {selectedCondition ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-medium">{selectedCondition.name} Treatment</h3>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">{selectedCondition.treatment}</p>
+                        
+                        <Alert className="bg-amber-50 border-amber-200">
+                          <AlertTriangle className="h-5 w-5 text-amber-500" />
+                          <AlertTitle className="text-amber-800">Warning</AlertTitle>
+                          <AlertDescription className="text-amber-700">
+                            This treatment information is AI-generated and for educational purposes only. 
+                            For accurate diagnosis and treatment, please consult with a healthcare professional.
+                          </AlertDescription>
+                        </Alert>
+
+                        <div className="bg-senay-blue-50 border border-senay-blue-100 p-4 rounded-md mt-6 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-senay-blue-100 p-2 rounded-full">
+                              <MapPin size={20} className="text-senay-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-senay-blue-800">Find Nearest Hospital</h4>
+                              <p className="text-sm text-senay-blue-600">Get professional medical advice</p>
+                            </div>
+                          </div>
+                          <Button 
+                            onClick={handleFindHospital}
+                            className="bg-senay-blue-600 hover:bg-senay-blue-700"
+                          >
+                            Find Location
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-6">
+                        <p className="text-gray-600">Please select a condition from the conditions step to see treatment options.</p>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setActiveTab('conditions')} 
+                          className="mt-4"
+                        >
+                          Go back to select condition
+                        </Button>
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
 
