@@ -1,11 +1,11 @@
 
-import React, { useEffect, useRef } from 'react';
+import * as React from 'react';
 import { Pill } from 'lucide-react';
 
 const HeroPillOrbit: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
+  React.useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     
