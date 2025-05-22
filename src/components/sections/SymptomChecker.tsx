@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -200,22 +199,22 @@ const SymptomChecker: React.FC = () => {
         id: '1',
         name: 'Common Cold',
         matchedSymptoms: Math.min(selectedSymptoms.length, 3),
-        details: 'The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold. Symptoms typically appear one to three days after exposure to a cold-causing virus and can include runny nose, sore throat, cough, congestion, slight body aches, a mild headache, sneezing, and low-grade fever.',
-        treatment: 'Rest and drink plenty of fluids. Over-the-counter medicines can help ease symptoms but won\'t make your cold go away any faster. Antibiotics are of no use against cold viruses. Try saline nasal drops or sprays, and use a humidifier or cool mist vaporizer in your room.'
+        details: "The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold. Symptoms typically appear one to three days after exposure to a cold-causing virus and can include runny nose, sore throat, cough, congestion, slight body aches, a mild headache, sneezing, and low-grade fever.",
+        treatment: "Rest and drink plenty of fluids. Over-the-counter medicines can help ease symptoms but won't make your cold go away any faster. Antibiotics are of no use against cold viruses. Try saline nasal drops or sprays, and use a humidifier or cool mist vaporizer in your room."
       },
       {
         id: '2',
         name: 'Seasonal Allergies',
         matchedSymptoms: Math.max(1, Math.floor(selectedSymptoms.length / 2)),
-        details: 'Seasonal allergies, also called hay fever and allergic rhinitis, can make you miserable with symptoms like runny nose, itchy eyes, congestion, and sneezing. Tree pollens in spring, grasses in summer, and weeds in fall can trigger these symptoms in susceptible individuals. Diagnosis often includes skin or blood tests to identify specific allergens.',
-        treatment: 'Avoid known allergens when possible. Consider over-the-counter or prescription antihistamines, decongestants, or nasal corticosteroids. For severe allergies, your doctor might recommend immunotherapy through allergy shots or sublingual tablets.'
+        details: "Seasonal allergies, also called hay fever and allergic rhinitis, can make you miserable with symptoms like runny nose, itchy eyes, congestion, and sneezing. Tree pollens in spring, grasses in summer, and weeds in fall can trigger these symptoms in susceptible individuals. Diagnosis often includes skin or blood tests to identify specific allergens.",
+        treatment: "Avoid known allergens when possible. Consider over-the-counter or prescription antihistamines, decongestants, or nasal corticosteroids. For severe allergies, your doctor might recommend immunotherapy through allergy shots or sublingual tablets."
       },
       {
         id: '3',
         name: 'Influenza (Flu)',
         matchedSymptoms: Math.min(selectedSymptoms.length, 4),
-        details: 'The flu is a contagious respiratory illness caused by influenza viruses that infect the nose, throat, and sometimes the lungs. It can cause mild to severe illness, and at times can lead to death. Flu is different from a cold and usually comes on suddenly. People who have flu often feel some or all of these symptoms: fever, chills, cough, sore throat, runny or stuffy nose, muscle or body aches, headaches, and fatigue.',
-        treatment: 'If diagnosed early (within 48 hours of symptoms), antiviral medications may be prescribed to shorten the duration and reduce severity. Otherwise, rest, fluids, and over-the-counter medications to relieve symptoms are recommended. In high-risk cases, hospitalization may be necessary.'
+        details: "The flu is a contagious respiratory illness caused by influenza viruses that infect the nose, throat, and sometimes the lungs. It can cause mild to severe illness, and at times can lead to death. Flu is different from a cold and usually comes on suddenly. People who have flu often feel some or all of these symptoms: fever, chills, cough, sore throat, runny or stuffy nose, muscle or body aches, headaches, and fatigue.",
+        treatment: "If diagnosed early (within 48 hours of symptoms), antiviral medications may be prescribed to shorten the duration and reduce severity. Otherwise, rest, fluids, and over-the-counter medications to relieve symptoms are recommended. In high-risk cases, hospitalization may be necessary."
       },
     ];
     
