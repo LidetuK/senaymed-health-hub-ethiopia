@@ -1,9 +1,8 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DrugInteractionChecker from "./pages/DrugInteractionChecker";
@@ -12,8 +11,14 @@ import Conditions from "./pages/Conditions";
 import TreatmentGuides from "./pages/TreatmentGuides";
 import CompareDrugs from "./pages/CompareDrugs";
 import MyMedList from "./pages/MyMedList";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
+
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/" />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -30,6 +35,7 @@ const App = () => (
           <Route path="/treatment-guides" element={<TreatmentGuides />} />
           <Route path="/compare-drugs" element={<CompareDrugs />} />
           <Route path="/my-med-list" element={<MyMedList />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/discount-card" element={<NotFound />} />
           <Route path="/fda-alerts" element={<NotFound />} />
           <Route path="/price-guide" element={<NotFound />} />

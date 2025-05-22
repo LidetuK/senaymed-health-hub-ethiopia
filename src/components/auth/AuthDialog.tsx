@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,6 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 // Define the form schemas using Zod
 const loginSchema = z.object({
@@ -48,6 +48,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -69,22 +70,67 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
     },
   });
 
-  const onLoginSubmit = (values: LoginFormValues) => {
-    console.log("Login form submitted:", values);
-    toast({
-      title: "Login Successful",
-      description: "Welcome back!",
-    });
-    onOpenChange(false);
+  const onLoginSubmit = async (values: LoginFormValues) => {
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
+      const data = await response.json();
+      // Store JWT token in localStorage (or cookie)
+      localStorage.setItem("token", data.access_token);
+
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      onOpenChange(false);
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const onRegisterSubmit = (values: RegisterFormValues) => {
-    console.log("Register form submitted:", values);
-    toast({
-      title: "Registration Successful",
-      description: "Your account has been created.",
-    });
-    onOpenChange(false);
+  const onRegisterSubmit = async (values: RegisterFormValues) => {
+    try {
+      const response = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+
+      toast({
+        title: "Registration Successful",
+        description: "Your account has been created.",
+      });
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: "Registration Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
