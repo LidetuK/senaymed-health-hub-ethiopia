@@ -1,9 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import HeroPillOrbit from '@/components/animations/HeroPillOrbit';
+import AuthDialog from '@/components/auth/AuthDialog';
 
 const Hero: React.FC = () => {
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [initialTab, setInitialTab] = useState<"login" | "register">("register");
+  
+  const handleGetStarted = () => {
+    setInitialTab("register");
+    setAuthDialogOpen(true);
+  };
+
   return (
     <section className="min-h-[85vh] bg-gradient-to-br from-senay-blue-50 to-white flex items-center relative overflow-hidden">
       {/* Background pattern */}
@@ -23,7 +32,11 @@ const Hero: React.FC = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="bg-gradient-to-r from-senay-blue-500 to-senay-teal-500 text-white">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-senay-blue-500 to-senay-teal-500 text-white"
+                onClick={handleGetStarted}
+              >
                 Get Started
               </Button>
               <Button variant="outline" size="lg">
@@ -37,6 +50,12 @@ const Hero: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <AuthDialog 
+        open={authDialogOpen} 
+        onOpenChange={setAuthDialogOpen} 
+        initialTab={initialTab}
+      />
     </section>
   );
 };
