@@ -34,136 +34,131 @@ const DrugSearch: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white w-full">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
-            Find Drugs & Conditions
-          </h2>
-          
-          <form onSubmit={handleSearch} className="relative mb-4">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter a drug name, condition, pill imprint, etc."
-              className="w-full py-3 px-4 pr-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-senay-blue-500 focus:border-transparent"
-            />
-            <Button 
-              type="submit" 
-              variant="ghost" 
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5 text-gray-500" />
-            </Button>
-          </form>
-          
-          <div className="text-center text-sm mb-10">
-            <span className="text-gray-600 mr-2">Trending searches:</span>
-            {trendingSearches.map((term, index) => (
-              <React.Fragment key={term}>
-                <button 
-                  className="text-senay-blue-600 hover:text-senay-blue-800 hover:underline font-medium"
-                  onClick={() => setSearchQuery(term)}
-                >
-                  {term}
-                </button>
-                {index < trendingSearches.length - 1 && <span className="text-gray-400 mx-1">•</span>}
-              </React.Fragment>
-            ))}
-          </div>
-          
-          {/* Navigation Carousel */}
-          <div className="mb-10 relative">
-            <Carousel className="w-full">
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {navItems.map((item) => (
-                  <CarouselItem key={item.name} className="pl-2 md:pl-4 basis-1/2 md:basis-1/4 lg:basis-1/4">
-                    <Link to={item.path}>
-                      <div className="flex flex-col items-center bg-white rounded-lg p-6 text-center hover:shadow-md transition-shadow border border-gray-100 hover:border-senay-blue-200 h-full">
-                        <div className="mb-3">
-                          {getNavIcon(item.icon)}
-                        </div>
-                        <h3 className="font-medium text-gray-800 text-sm">{item.name}</h3>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+          Find Drugs & Conditions
+        </h2>
+        
+        <form onSubmit={handleSearch} className="relative mb-4 max-w-4xl mx-auto">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Enter a drug name, condition, pill imprint, etc."
+            className="w-full py-3 px-4 pr-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-senay-blue-500 focus:border-transparent"
+          />
+          <Button 
+            type="submit" 
+            variant="ghost" 
+            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5 text-gray-500" />
+          </Button>
+        </form>
+        
+        <div className="text-center text-sm mb-10 max-w-4xl mx-auto">
+          <span className="text-gray-600 mr-2">Trending searches:</span>
+          {trendingSearches.map((term, index) => (
+            <React.Fragment key={term}>
+              <button 
+                className="text-senay-blue-600 hover:text-senay-blue-800 hover:underline font-medium"
+                onClick={() => setSearchQuery(term)}
+              >
+                {term}
+              </button>
+              {index < trendingSearches.length - 1 && <span className="text-gray-400 mx-1">•</span>}
+            </React.Fragment>
+          ))}
+        </div>
+        
+        {/* Navigation Carousel */}
+        <div className="mb-10 relative">
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {navItems.map((item) => (
+                <CarouselItem key={item.name} className="pl-2 md:pl-4 basis-1/2 md:basis-1/4 lg:basis-1/4">
+                  <Link to={item.path}>
+                    <div className="flex flex-col items-center bg-white rounded-lg p-6 text-center hover:shadow-md transition-shadow border border-gray-100 hover:border-senay-blue-200 h-full">
+                      <div className="mb-3">
+                        {getNavIcon(item.icon)}
                       </div>
-                    </Link>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
-            </Carousel>
-          </div>
-          
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div>
-              <div className="flex space-x-2 mb-4 border-b">
-                <Button variant="ghost" className="rounded-none border-b-2 border-senay-blue-600 text-senay-blue-600 -mb-px">
-                  Browse Drugs
-                </Button>
-                <Button variant="ghost" className="rounded-none">
-                  Conditions
-                </Button>
-                <Button variant="ghost" className="rounded-none">
-                  Symptoms
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-8 gap-2 mb-4">
-                {/* Alphabet navigation */}
-                {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map(letter => (
-                  <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
-                    {letter}
-                  </Button>
-                ))}
-              </div>
-              <div className="grid grid-cols-8 gap-2 mb-4">
-                {['I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'].map(letter => (
-                  <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
-                    {letter}
-                  </Button>
-                ))}
-              </div>
-              <div className="grid grid-cols-8 gap-2 mb-4">
-                {['Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'].map(letter => (
-                  <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
-                    {letter}
-                  </Button>
-                ))}
-              </div>
-              <div className="grid grid-cols-8 gap-2">
-                {['Y', 'Z', '0-9'].map(letter => (
-                  <Button key={letter} variant="outline" size="sm" className={`${letter === '0-9' ? 'col-span-2' : ''} h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100`}>
-                    {letter}
-                  </Button>
-                ))}
-                <Button variant="outline" size="sm" className="col-span-5 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
-                  Advanced Search
-                </Button>
-              </div>
+                      <h3 className="font-medium text-gray-800 text-sm">{item.name}</h3>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
+          </Carousel>
+        </div>
+        
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div>
+            <div className="flex space-x-2 mb-4 border-b">
+              <Button variant="ghost" className="rounded-none border-b-2 border-senay-blue-600 text-senay-blue-600 -mb-px">
+                Browse Drugs
+              </Button>
+              <Button variant="ghost" className="rounded-none">
+                Conditions
+              </Button>
             </div>
             
-            <div>
-              <div className="bg-gray-800 text-white p-3 mb-4 rounded-t-md">
-                Browse by Site Section
+            <div className="grid grid-cols-8 gap-2 mb-4">
+              {/* Alphabet navigation */}
+              {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map(letter => (
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                  {letter}
+                </Button>
+              ))}
+            </div>
+            <div className="grid grid-cols-8 gap-2 mb-4">
+              {['I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'].map(letter => (
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                  {letter}
+                </Button>
+              ))}
+            </div>
+            <div className="grid grid-cols-8 gap-2 mb-4">
+              {['Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'].map(letter => (
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                  {letter}
+                </Button>
+              ))}
+            </div>
+            <div className="grid grid-cols-8 gap-2">
+              {['Y', 'Z', '0-9'].map(letter => (
+                <Button key={letter} variant="outline" size="sm" className={`${letter === '0-9' ? 'col-span-2' : ''} h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100`}>
+                  {letter}
+                </Button>
+              ))}
+              <Button variant="outline" size="sm" className="col-span-5 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                Advanced Search
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <div className="bg-gray-800 text-white p-3 mb-4 rounded-t-md">
+              Browse by Site Section
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <Link to="/drugs" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Drugs A-Z</Link>
+                <Link to="/side-effects" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Side Effects Checker</Link>
+                <Link to="/dosage" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Dosage Guidelines</Link>
+                <Link to="/my-med-list" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Manage your Meds</Link>
+                <Link to="/mobile-apps" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Mobile Apps</Link>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <Link to="/drugs" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Drugs A-Z</Link>
-                  <Link to="/side-effects" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Side Effects Checker</Link>
-                  <Link to="/dosage" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Dosage Guidelines</Link>
-                  <Link to="/my-med-list" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Manage your Meds</Link>
-                  <Link to="/mobile-apps" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Mobile Apps</Link>
-                </div>
-                <div className="space-y-3">
-                  <Link to="/health-professionals" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Health Professionals</Link>
-                  <Link to="/news" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Medical News</Link>
-                  <Link to="/fda-alerts" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">FDA Alerts</Link>
-                  <Link to="/new-drugs" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">New Drugs</Link>
-                  <Link to="/more" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">More</Link>
-                </div>
+              <div className="space-y-3">
+                <Link to="/health-professionals" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Health Professionals</Link>
+                <Link to="/news" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">Medical News</Link>
+                <Link to="/fda-alerts" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">FDA Alerts</Link>
+                <Link to="/new-drugs" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">New Drugs</Link>
+                <Link to="/more" className="block text-senay-blue-600 hover:text-senay-blue-800 hover:underline">More</Link>
               </div>
             </div>
           </div>
@@ -227,6 +222,12 @@ const getNavIcon = (iconType: string) => {
           </svg>
         </div>
       );
+    case 'compare':
+      return (
+        <div className="w-12 h-12 flex items-center justify-center bg-orange-100 rounded-full">
+          <img src="/lovable-uploads/b82bd6c0-3a71-40cd-a8c3-71da1dd55c99.png" alt="Red and white pill" className="h-7 w-auto" />
+        </div>
+      );
     default:
       return (
         <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
@@ -238,20 +239,6 @@ const getNavIcon = (iconType: string) => {
         </div>
       );
   }
-};
-
-interface SearchCategoryProps {
-  icon: React.ReactNode;
-  title: string;
-}
-
-const SearchCategory: React.FC<SearchCategoryProps> = ({ icon, title }) => {
-  return (
-    <div className="flex flex-col items-center bg-white rounded-lg p-6 text-center hover:shadow-md transition-shadow border border-gray-100 hover:border-senay-blue-200">
-      <div className="mb-3">{icon}</div>
-      <h3 className="font-medium text-gray-800">{title}</h3>
-    </div>
-  );
 };
 
 export default DrugSearch;

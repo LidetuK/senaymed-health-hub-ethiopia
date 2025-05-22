@@ -73,9 +73,8 @@ const Conditions: React.FC = () => {
             </div>
 
             <Tabs defaultValue="a-z" className="bg-white shadow-md rounded-lg overflow-hidden">
-              <TabsList className="w-full grid grid-cols-3 h-auto p-0">
+              <TabsList className="w-full grid grid-cols-2 h-auto p-0">
                 <TabsTrigger value="a-z" className="py-3 rounded-none data-[state=active]:bg-blue-50">Browse A-Z</TabsTrigger>
-                <TabsTrigger value="symptoms" className="py-3 rounded-none data-[state=active]:bg-blue-50">By Symptoms</TabsTrigger>
                 <TabsTrigger value="body" className="py-3 rounded-none data-[state=active]:bg-blue-50">By Body Part</TabsTrigger>
               </TabsList>
               
@@ -114,17 +113,6 @@ const Conditions: React.FC = () => {
                         ))}
                       </ul>
                     </div>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="symptoms" className="p-6">
-                <p className="text-gray-600 mb-4">Select a symptom to find related conditions:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {['Fever', 'Cough', 'Fatigue', 'Shortness of breath', 'Headache', 'Nausea'].map((symptom) => (
-                    <Button key={symptom} variant="outline" className="justify-start">
-                      {symptom}
-                    </Button>
                   ))}
                 </div>
               </TabsContent>
