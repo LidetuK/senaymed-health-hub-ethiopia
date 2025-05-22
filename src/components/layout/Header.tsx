@@ -3,10 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Hide header on dashboard page
+  if (location.pathname === '/dashboard') {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => {

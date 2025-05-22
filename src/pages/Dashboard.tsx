@@ -1,29 +1,251 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Header from "@/components/layout/Header";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import Footer from "@/components/layout/Footer";
-import { CheckCircle, Settings, List, Users, Crown, CreditCard, User, BarChart3, Bell } from "lucide-react";
+import { CheckCircle, Settings, List, Users, Crown, CreditCard, User, BarChart3, Bell, ChevronRight, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(1);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    dateOfBirth: "",
+    gender: "",
+    phoneNumber: "",
+    address: "",
+    emergencyContact: "",
+    allergies: "",
+    existingConditions: "",
+    currentMedications: "",
+  });
   const username = localStorage.getItem("username") || "User";
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem("onboardingCompleted");
+    
+    if (!hasCompletedOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   const handleSubscribe = () => {
     // Implement subscription logic here
-    alert("Subscription feature will be implemented with payment integration");
+    toast({
+      title: "Coming Soon",
+      description: "Subscription feature will be implemented with payment integration",
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNextStep = () => {
+    if (onboardingStep < 3) {
+      setOnboardingStep(prev => prev + 1);
+    } else {
+      completeOnboarding();
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (onboardingStep > 1) {
+      setOnboardingStep(prev => prev - 1);
+    }
+  };
+
+  const completeOnboarding = () => {
+    localStorage.setItem("onboardingCompleted", "true");
+    localStorage.setItem("userProfile", JSON.stringify(formData));
+    setShowOnboarding(false);
+    
+    toast({
+      title: "Profile Complete!",
+      description: "Your profile has been successfully set up.",
+    });
+  };
+
+  const skipOnboarding = () => {
+    localStorage.setItem("onboardingCompleted", "true");
+    setShowOnboarding(false);
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+      {/* Onboarding Dialog */}
+      <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold gradient-text">
+              {onboardingStep === 1 && "Welcome to SenayMed!"}
+              {onboardingStep === 2 && "Health Information"}
+              {onboardingStep === 3 && "Almost Done!"}
+            </DialogTitle>
+            <DialogDescription>
+              {onboardingStep === 1 && "Let's set up your profile to get started"}
+              {onboardingStep === 2 && "Tell us about your health conditions"}
+              {onboardingStep === 3 && "Final details to complete your profile"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${onboardingStep >= 1 ? "bg-senay-blue-500 text-white" : "bg-gray-200"}`}>
+                1
+              </div>
+              <div className={`w-16 h-1 ${onboardingStep >= 2 ? "bg-senay-blue-500" : "bg-gray-200"}`}></div>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${onboardingStep >= 2 ? "bg-senay-blue-500 text-white" : "bg-gray-200"}`}>
+                2
+              </div>
+              <div className={`w-16 h-1 ${onboardingStep >= 3 ? "bg-senay-blue-500" : "bg-gray-200"}`}></div>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${onboardingStep >= 3 ? "bg-senay-blue-500 text-white" : "bg-gray-200"}`}>
+                3
+              </div>
+            </div>
+          </div>
+
+          {onboardingStep === 1 && (
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input 
+                  id="fullName" 
+                  name="fullName" 
+                  value={formData.fullName} 
+                  onChange={handleInputChange} 
+                  placeholder="John Doe" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Input 
+                  id="dateOfBirth" 
+                  name="dateOfBirth" 
+                  value={formData.dateOfBirth} 
+                  onChange={handleInputChange} 
+                  type="date" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Input 
+                  id="gender" 
+                  name="gender" 
+                  value={formData.gender} 
+                  onChange={handleInputChange} 
+                  placeholder="Male/Female/Other" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input 
+                  id="phoneNumber" 
+                  name="phoneNumber" 
+                  value={formData.phoneNumber} 
+                  onChange={handleInputChange} 
+                  placeholder="+1 234 567 8900" 
+                />
+              </div>
+            </div>
+          )}
+
+          {onboardingStep === 2 && (
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="allergies">Do you have any allergies?</Label>
+                <Textarea 
+                  id="allergies" 
+                  name="allergies" 
+                  value={formData.allergies} 
+                  onChange={handleInputChange} 
+                  placeholder="List any allergies you may have" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="existingConditions">Existing Medical Conditions</Label>
+                <Textarea 
+                  id="existingConditions" 
+                  name="existingConditions" 
+                  value={formData.existingConditions} 
+                  onChange={handleInputChange} 
+                  placeholder="Diabetes, Hypertension, etc." 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="currentMedications">Current Medications</Label>
+                <Textarea 
+                  id="currentMedications" 
+                  name="currentMedications" 
+                  value={formData.currentMedications} 
+                  onChange={handleInputChange} 
+                  placeholder="List any medications you are currently taking" 
+                />
+              </div>
+            </div>
+          )}
+
+          {onboardingStep === 3 && (
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="address">Home Address</Label>
+                <Textarea 
+                  id="address" 
+                  name="address" 
+                  value={formData.address} 
+                  onChange={handleInputChange} 
+                  placeholder="Enter your full address" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                <Input 
+                  id="emergencyContact" 
+                  name="emergencyContact" 
+                  value={formData.emergencyContact} 
+                  onChange={handleInputChange} 
+                  placeholder="Name and phone number" 
+                />
+              </div>
+              <div className="p-4 bg-senay-blue-100 rounded-md">
+                <p className="text-sm text-muted-foreground">
+                  By completing your profile, you'll get personalized health recommendations and medication reminders.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex justify-between">
+            <div>
+              {onboardingStep > 1 ? (
+                <Button variant="outline" onClick={handlePreviousStep}>
+                  Back
+                </Button>
+              ) : (
+                <Button variant="ghost" onClick={skipOnboarding}>
+                  Skip for now
+                </Button>
+              )}
+            </div>
+            <Button onClick={handleNextStep} className="bg-senay-blue-500 hover:bg-senay-blue-600">
+              {onboardingStep < 3 ? "Next" : "Complete Setup"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <div className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 mt-12">
           <div className="flex flex-col md:flex-row justify-between items-start gap-6">
             {/* Sidebar */}
             <div className="w-full md:w-64 bg-sidebar rounded-lg shadow-md">
