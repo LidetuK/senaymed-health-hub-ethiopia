@@ -11,28 +11,101 @@ export class DrugsService {
   ) {}
 
   async getDrugsByFirstLetter(letter: string) {
+    console.log(`Fetching drugs starting with letter: ${letter}`);
+    
     // 1. Check local DB
     const cached = await this.drugRepository.find({
       where: { name: ILike(`${letter}%`) },
       order: { name: 'ASC' }
     });
+    console.log(`Found ${cached.length} drugs in cache`);
+    
     if (cached.length > 0) {
+      console.log('Returning cached drugs:', cached.map(d => d.name));
       return cached.map(d => d.name);
     }
 
-    // 2. Fetch from OpenFDA
-    const url = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:${letter}*&limit=20`;
-    const response = await fetch(url);
-    const data: any = await response.json();
-    const drugs = data.results?.flatMap((item: any) => item.openfda.brand_name || []) || [];
-    const uniqueDrugs = Array.from(new Set(drugs)).sort();
+    // 2. Fetch from OpenFDA with increased limit
+    const brandNameUrl = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:${letter}*&limit=100`;
+    const genericNameUrl = `https://api.fda.gov/drug/label.json?search=openfda.generic_name:${letter}*&limit=100`;
+    
+    console.log(`Fetching brand names from OpenFDA: ${brandNameUrl}`);
+    console.log(`Fetching generic names from OpenFDA: ${genericNameUrl}`);
+    
+    try {
+      const [brandResponse, genericResponse] = await Promise.all([
+        fetch(brandNameUrl),
+        fetch(genericNameUrl)
+      ]);
+      
+      if (!brandResponse.ok || !genericResponse.ok) {
+        console.error('OpenFDA API error:', {
+          brandStatus: brandResponse.status,
+          genericStatus: genericResponse.status
+        });
+        throw new Error('Failed to fetch from OpenFDA API');
+      }
+      
+      const [brandData, genericData] = await Promise.all([
+        brandResponse.json(),
+        genericResponse.json()
+      ]);
+      
+      console.log(`Brand names response status: ${brandResponse.status}`);
+      console.log(`Generic names response status: ${genericResponse.status}`);
+      console.log(`Number of brand name results: ${brandData.results?.length || 0}`);
+      console.log(`Number of generic name results: ${genericData.results?.length || 0}`);
+      
+      // Get all brand names and generic names
+      const brandDrugs = brandData.results?.flatMap((item: any) => {
+        const brandNames = item.openfda.brand_name || [];
+        const genericNames = item.openfda.generic_name || [];
+        return [...brandNames, ...genericNames];
+      }) || [];
+      
+      const genericDrugs = genericData.results?.flatMap((item: any) => {
+        const brandNames = item.openfda.brand_name || [];
+        const genericNames = item.openfda.generic_name || [];
+        return [...brandNames, ...genericNames];
+      }) || [];
+      
+      const allDrugs = [...brandDrugs, ...genericDrugs];
+      console.log(`Total drugs before deduplication: ${allDrugs.length}`);
+      console.log('Sample of drugs before deduplication:', allDrugs.slice(0, 5));
+      
+      // Remove duplicates and sort
+      const uniqueDrugs = Array.from(new Set(allDrugs))
+        .filter((name): name is string => {
+          // Filter out null, undefined, and empty strings
+          if (!name || typeof name !== 'string' || name.trim() === '') {
+            return false;
+          }
+          // Filter out non-drug names (like "Attitude Diaper Cream")
+          if (name.toLowerCase().includes('cream') || 
+              name.toLowerCase().includes('diaper') || 
+              name.toLowerCase().includes('lotion') ||
+              name.toLowerCase().includes('shampoo') ||
+              name.toLowerCase().includes('soap')) {
+            return false;
+          }
+          return true;
+        })
+        .map(name => name.trim()) // Trim whitespace
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })); // Case-insensitive sort
 
-    // 3. Save to DB (only strings)
-    await this.drugRepository.save(
-      uniqueDrugs.filter((name): name is string => typeof name === 'string').map(name => ({ name }))
-    );
+      console.log(`Total unique drugs after deduplication: ${uniqueDrugs.length}`);
+      console.log('First few drugs after deduplication:', uniqueDrugs.slice(0, 5));
 
-    return uniqueDrugs;
+      // 3. Save to DB
+      await this.drugRepository.save(
+        uniqueDrugs.map(name => ({ name }))
+      );
+
+      return uniqueDrugs;
+    } catch (error) {
+      console.error('Error fetching drugs:', error);
+      throw error;
+    }
   }
 
   async getDrugDetailByName(name: string) {

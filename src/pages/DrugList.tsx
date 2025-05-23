@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from '@/components/layout/Header';
@@ -26,7 +25,7 @@ const DrugList: React.FC = () => {
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 25;
 
   useEffect(() => {
     setLoading(true);
@@ -181,7 +180,10 @@ const DrugList: React.FC = () => {
 
                 {/* Pagination */}
                 {drugs.length > itemsPerPage && (
-                  <div className="mt-8 flex justify-center">
+                  <div className="mt-8 flex flex-col items-center gap-4">
+                    <div className="text-sm text-gray-600">
+                      Showing {startIndex + 1}-{Math.min(endIndex, drugs.length)} of {drugs.length} drugs
+                    </div>
                     <Pagination>
                       <PaginationContent>
                         <PaginationItem>
