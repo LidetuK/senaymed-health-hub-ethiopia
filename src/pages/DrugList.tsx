@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { toast } from "@/components/ui/use-toast";
 
 const DrugList: React.FC = () => {
   const { letter } = useParams<{ letter: string }>();
@@ -31,13 +32,39 @@ const DrugList: React.FC = () => {
     setLoading(true);
     setError(null);
     setCurrentPage(1);
-    fetch(`http://localhost:3000/drugs?startsWith=${letter}`)
+    
+    // Using API URL with protocol and host
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    
+    fetch(`${apiUrl}/drugs?startsWith=${letter}`)
       .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch drugs");
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error("No drugs found starting with this letter");
+          }
+          throw new Error(`API responded with status: ${res.status}`);
+        }
         return res.json();
       })
-      .then(data => setDrugs(data))
-      .catch(err => setError(err.message))
+      .then(data => {
+        setDrugs(Array.isArray(data) ? data : []);
+        if (Array.isArray(data) && data.length === 0) {
+          toast({
+            title: "No drugs found",
+            description: `No medications found starting with '${letter}'`,
+            variant: "destructive",
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching drugs:", err);
+        setError(`Failed to load drug data: ${err.message}`);
+        toast({
+          title: "Error loading drugs",
+          description: err.message,
+          variant: "destructive",
+        });
+      })
       .finally(() => setLoading(false));
   }, [letter]);
 
@@ -45,9 +72,23 @@ const DrugList: React.FC = () => {
     setSelectedDrug(drug);
     setDetailLoading(true);
     setDrugDetail(null);
-    fetch(`http://localhost:3000/drugs/detail?name=${encodeURIComponent(drug)}`)
-      .then(res => res.json())
+    
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    
+    fetch(`${apiUrl}/drugs/detail?name=${encodeURIComponent(drug)}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`API responded with status: ${res.status}`);
+        return res.json();
+      })
       .then(data => setDrugDetail(data))
+      .catch(err => {
+        console.error("Error fetching drug details:", err);
+        toast({
+          title: "Error loading drug details",
+          description: err.message,
+          variant: "destructive",
+        });
+      })
       .finally(() => setDetailLoading(false));
   };
 
