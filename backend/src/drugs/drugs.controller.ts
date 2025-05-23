@@ -9,4 +9,9 @@ export class DrugsController {
   async getDrugs(@Query('startsWith') startsWith: string) {
     return this.drugsService.getDrugsByFirstLetter(startsWith);
   }
+
+  @Get('detail')
+  async getDrugDetail(@Query('name') name: string) {
+    return this.drugsService.getDrugDetailByName(name);
+  }
 } 

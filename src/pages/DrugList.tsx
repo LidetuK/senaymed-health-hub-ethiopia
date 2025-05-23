@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from '@/components/layout/Header';
@@ -11,6 +10,9 @@ const DrugList: React.FC = () => {
   const [drugs, setDrugs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDrug, setSelectedDrug] = useState<string | null>(null);
+  const [drugDetail, setDrugDetail] = useState<any>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -24,6 +26,16 @@ const DrugList: React.FC = () => {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [letter]);
+
+  const handleViewDetail = (drug: string) => {
+    setSelectedDrug(drug);
+    setDetailLoading(true);
+    setDrugDetail(null);
+    fetch(`http://localhost:3000/drugs/detail?name=${encodeURIComponent(drug)}`)
+      .then(res => res.json())
+      .then(data => setDrugDetail(data))
+      .finally(() => setDetailLoading(false));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,8 +118,11 @@ const DrugList: React.FC = () => {
                             </p>
                           </div>
                           <div className="text-right">
-                            <button className="text-senay-blue-600 hover:text-senay-blue-800 font-medium transition-colors">
-                              View Details →
+                            <button 
+                              onClick={() => handleViewDetail(drug)}
+                              className="text-senay-blue-600 hover:text-senay-blue-800 font-medium transition-colors"
+                            >
+                              View Detail
                             </button>
                           </div>
                         </div>
@@ -131,6 +146,58 @@ const DrugList: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Modal for drug detail */}
+      {selectedDrug && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full overflow-y-auto max-h-[90vh]">
+            <h2 className="text-2xl font-bold mb-2">{drugDetail?.name || selectedDrug}</h2>
+            {detailLoading ? (
+              <p>Loading...</p>
+            ) : (
+              <div className="space-y-3">
+                {drugDetail?.description && <div><strong>Description:</strong> <p>{drugDetail.description}</p></div>}
+                {drugDetail?.indications_and_usage && <div><strong>Indications & Usage:</strong> <p>{drugDetail.indications_and_usage}</p></div>}
+                {drugDetail?.purpose && <div><strong>Purpose:</strong> <p>{drugDetail.purpose}</p></div>}
+                {drugDetail?.warnings && <div><strong>Warnings:</strong> <p>{drugDetail.warnings}</p></div>}
+                {drugDetail?.dosage_and_administration && <div><strong>Dosage & Administration:</strong> <p>{drugDetail.dosage_and_administration}</p></div>}
+                {drugDetail?.adverse_reactions && <div><strong>Adverse Reactions:</strong> <p>{drugDetail.adverse_reactions}</p></div>}
+                {drugDetail?.contraindications && <div><strong>Contraindications:</strong> <p>{drugDetail.contraindications}</p></div>}
+                {drugDetail?.active_ingredient && <div><strong>Active Ingredient:</strong> <p>{drugDetail.active_ingredient}</p></div>}
+                {drugDetail?.inactive_ingredient && <div><strong>Inactive Ingredient:</strong> <p>{drugDetail.inactive_ingredient}</p></div>}
+                {drugDetail?.precautions && <div><strong>Precautions:</strong> <p>{drugDetail.precautions}</p></div>}
+                {drugDetail?.drug_interactions && <div><strong>Drug Interactions:</strong> <p>{drugDetail.drug_interactions}</p></div>}
+                {drugDetail?.overdosage && <div><strong>Overdosage:</strong> <p>{drugDetail.overdosage}</p></div>}
+                {drugDetail?.how_supplied && <div><strong>How Supplied:</strong> <p>{drugDetail.how_supplied}</p></div>}
+                {drugDetail?.storage_and_handling && <div><strong>Storage & Handling:</strong> <p>{drugDetail.storage_and_handling}</p></div>}
+                {/* If no details at all */}
+                {!drugDetail?.description &&
+                  !drugDetail?.indications_and_usage &&
+                  !drugDetail?.purpose &&
+                  !drugDetail?.warnings &&
+                  !drugDetail?.dosage_and_administration &&
+                  !drugDetail?.adverse_reactions &&
+                  !drugDetail?.contraindications &&
+                  !drugDetail?.active_ingredient &&
+                  !drugDetail?.inactive_ingredient &&
+                  !drugDetail?.precautions &&
+                  !drugDetail?.drug_interactions &&
+                  !drugDetail?.overdosage &&
+                  !drugDetail?.how_supplied &&
+                  !drugDetail?.storage_and_handling && (
+                    <p>No details found for this drug.</p>
+                )}
+              </div>
+            )}
+            <button
+              onClick={() => setSelectedDrug(null)}
+              className="mt-4 px-4 py-2 bg-senay-blue-600 text-white rounded hover:bg-senay-blue-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
