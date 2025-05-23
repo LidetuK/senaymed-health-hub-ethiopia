@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Languages, Facebook, Twitter, Instagram } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-1">
-            <h3 className="text-xl font-bold gradient-text mb-6">SenayMed</h3>
+            <img src="/senaymedlogo.png" alt="SenayMed Logo" className="h-20 mb-4" />
             <p className="text-gray-600 mb-4">
               Improving health information access in Ethiopia through technology and cultural inclusivity.
             </p>

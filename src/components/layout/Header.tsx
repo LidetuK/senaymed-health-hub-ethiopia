@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, Languages } from 'lucide-react';
@@ -44,7 +43,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
           <a href="/" className="flex items-center">
-            <span className="text-xl font-bold gradient-text">SenayMed</span>
+            <img src="/senaymedlogo.png" alt="SenayMed Logo" className="h-16 mr-2" />
           </a>
         </div>
 
@@ -59,8 +58,8 @@ const Header: React.FC = () => {
           <a href="#how" className="text-foreground/80 hover:text-senay-blue-600 transition-colors">
             How It Works
           </a>
-          <a href="#impact" className="text-foreground/80 hover:text-senay-blue-600 transition-colors">
-            Impact
+          <a href="/#drug-search" className="text-foreground/80 hover:text-senay-blue-600 transition-colors">
+            Drug Search
           </a>
           <Button variant="ghost" size="sm" className="text-foreground/80">
             <Languages size={18} className="mr-2" />
@@ -110,11 +109,11 @@ const Header: React.FC = () => {
               How It Works
             </a>
             <a 
-              href="#impact" 
+              href="/#drug-search" 
               className="text-foreground/80 hover:text-senay-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-muted"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Impact
+              Drug Search
             </a>
             <div className="border-t border-gray-100 my-2 pt-2">
               <Button variant="ghost" size="sm" className="w-full justify-start text-foreground/80">

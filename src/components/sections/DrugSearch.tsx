@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const DrugSearch: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
   
   const trendingSearches = [
     'Amoxicillin', 'Paracetamol', 'Coartem', 'Metformin', 'Hydrochlorothiazide', 'Omeprazole'
@@ -34,7 +34,7 @@ const DrugSearch: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-white w-full">
+    <section id="drug-search" className="py-16 bg-white w-full">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
           Find Drugs & Conditions
@@ -109,32 +109,32 @@ const DrugSearch: React.FC = () => {
             <div className="grid grid-cols-8 gap-2 mb-4">
               {/* Alphabet navigation */}
               {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map(letter => (
-                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100" onClick={() => navigate(`/drugs/${letter}`)}>
                   {letter}
                 </Button>
               ))}
             </div>
             <div className="grid grid-cols-8 gap-2 mb-4">
               {['I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'].map(letter => (
-                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100" onClick={() => navigate(`/drugs/${letter}`)}>
                   {letter}
                 </Button>
               ))}
             </div>
             <div className="grid grid-cols-8 gap-2 mb-4">
               {['Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'].map(letter => (
-                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+                <Button key={letter} variant="outline" size="sm" className="h-10 w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100" onClick={() => navigate(`/drugs/${letter}`)}>
                   {letter}
                 </Button>
               ))}
             </div>
             <div className="grid grid-cols-8 gap-2">
               {['Y', 'Z', '0-9'].map(letter => (
-                <Button key={letter} variant="outline" size="sm" className={`${letter === '0-9' ? 'col-span-2' : ''} h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100`}>
+                <Button key={letter} variant="outline" size="sm" className={`${letter === '0-9' ? 'col-span-2' : ''} h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100`} onClick={() => navigate(`/drugs/${letter}`)}>
                   {letter}
                 </Button>
               ))}
-              <Button variant="outline" size="sm" className="col-span-5 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100">
+              <Button variant="outline" size="sm" className="col-span-5 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100" onClick={() => navigate('/drugs')}>
                 Advanced Search
               </Button>
             </div>

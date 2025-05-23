@@ -8,8 +8,6 @@ import DrugSearch from '@/components/sections/DrugSearch';
 import Features from '@/components/sections/Features';
 import HowItWorks from '@/components/sections/HowItWorks';
 import SymptomChecker from '@/components/sections/SymptomChecker';
-import Testimonials from '@/components/sections/Testimonials';
-import Roadmap from '@/components/sections/Roadmap';
 import CallToAction from '@/components/sections/CallToAction';
 
 const Index: React.FC = () => {
@@ -23,8 +21,6 @@ const Index: React.FC = () => {
         <SymptomChecker />
         <Features />
         <HowItWorks />
-        <Testimonials />
-        <Roadmap />
         <CallToAction />
       </main>
       <Footer />

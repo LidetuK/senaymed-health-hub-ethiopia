@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -27,37 +26,30 @@ const CallToAction: React.FC = () => {
               Access drug & treatment information, identify pills, check interactions and set up personal medication records - all from your smartphone.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <Button 
-                className="bg-white text-senay-blue-600 hover:bg-gray-100 px-8 py-6"
-                onClick={handleGetStarted}
-              >
-                Get Started
-              </Button>
-              <Button 
-                variant="outline" 
-                className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6"
-                onClick={handleLearnMore}
-              >
-                Learn More
-              </Button>
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <img src="/apple-store.png" alt="Download on the App Store" className="h-14 w-auto" />
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <img src="/google-play.png" alt="Get it on Google Play" className="h-14 w-auto" />
+              </a>
             </div>
           </div>
           
           <div className="flex justify-center md:justify-end">
             <div className="relative">
               {/* Phone frame */}
-              <div className="relative w-64 h-[500px] rounded-[36px] bg-black p-3 shadow-2xl transform rotate-3">
+              <div className="relative w-96 h-[700px] rounded-[48px] bg-black p-4 shadow-2xl transform rotate-3">
                 {/* Screen */}
-                <div className="w-full h-full rounded-[28px] overflow-hidden bg-white">
+                <div className="w-full h-full rounded-[36px] overflow-hidden bg-white flex items-center justify-center">
                   {/* App screenshot */}
                   <img 
-                    src="/lovable-uploads/5ae7241c-87bc-4774-bf8f-989a104f995a.png" 
+                    src="/senaymobile.png" 
                     alt="SenayMed Mobile App" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-white"
                   />
                 </div>
                 {/* Notch */}
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-5 bg-black rounded-b-xl"></div>
+                <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl"></div>
               </div>
               
               {/* Decorative elements */}

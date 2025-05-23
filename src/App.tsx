@@ -12,6 +12,7 @@ import TreatmentGuides from "./pages/TreatmentGuides";
 import CompareDrugs from "./pages/CompareDrugs";
 import MyMedList from "./pages/MyMedList";
 import Dashboard from "./pages/Dashboard";
+import DrugList from "./pages/DrugList";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/price-guide" element={<NotFound />} />
           <Route path="/phonetic-search" element={<NotFound />} />
           <Route path="/health-professionals" element={<NotFound />} />
+          <Route path="/drugs/:letter" element={<DrugList />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

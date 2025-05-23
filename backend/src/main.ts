@@ -1,4 +1,3 @@
-
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
@@ -21,8 +20,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  // Set global prefix
-  app.setGlobalPrefix('api');
+  // Removed global prefix so routes are at /drugs
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
