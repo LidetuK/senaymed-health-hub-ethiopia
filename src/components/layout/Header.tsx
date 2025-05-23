@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLocation } from 'react-router-dom';
+import AuthDialog from '@/components/auth/AuthDialog';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [initialAuthTab, setInitialAuthTab] = useState<"login" | "register">("register");
+  
   const location = useLocation();
   
   // Hide header on dashboard page
@@ -22,6 +26,11 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  const handleGetStarted = () => {
+    setInitialAuthTab("register");
+    setAuthDialogOpen(true);
+  };
 
   return (
     <header
@@ -57,7 +66,11 @@ const Header: React.FC = () => {
             <Languages size={18} className="mr-2" />
             <span>EN</span>
           </Button>
-          <Button variant="default" className="bg-senay-blue-500 hover:bg-senay-blue-600">
+          <Button 
+            variant="default" 
+            className="bg-senay-blue-500 hover:bg-senay-blue-600"
+            onClick={handleGetStarted}
+          >
             Get Started
           </Button>
         </nav>
@@ -112,13 +125,22 @@ const Header: React.FC = () => {
             <Button 
               variant="default" 
               className="w-full bg-senay-blue-500 hover:bg-senay-blue-600 mt-4"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleGetStarted();
+              }}
             >
               Get Started
             </Button>
           </nav>
         </div>
       )}
+      
+      <AuthDialog 
+        open={authDialogOpen}
+        onOpenChange={setAuthDialogOpen}
+        initialTab={initialAuthTab}
+      />
     </header>
   );
 };
