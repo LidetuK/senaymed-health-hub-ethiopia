@@ -38,7 +38,8 @@ const SymptomChecker: React.FC = () => {
   const [selectedCondition, setSelectedCondition] = useState<Condition | null>(null);
   const { toast } = useToast();
   
-  const deepSeekApiKey = "sk-7c6a8a160ab646be9e19793ba72812f4";
+  // Update environment variable access for Vite
+  const deepSeekApiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
 
   const generateAgeOptions = () => {
     const options = [];
@@ -61,7 +62,10 @@ const SymptomChecker: React.FC = () => {
     setIsSearching(true);
 
     try {
-      // Using DeepSeek API for health-related queries
+      if (!deepSeekApiKey) {
+        throw new Error('API key not configured');
+      }
+
       const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -84,27 +88,48 @@ const SymptomChecker: React.FC = () => {
         })
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        // Extract the JSON array from the response
-        const content = data.choices[0].message.content;
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.choices?.[0]?.message?.content) {
+        throw new Error('Invalid API response format');
+      }
+
+      // Extract the JSON array from the response
+      const content = data.choices[0].message.content;
+      
+      try {
+        // Parse the JSON string to get the array of symptoms
+        const parsedSymptoms = JSON.parse(content);
         
-        try {
-          // Parse the JSON string to get the array of symptoms
-          const parsedSymptoms = JSON.parse(content);
-          setSuggestions(parsedSymptoms);
-        } catch (err) {
-          console.error('Error parsing symptoms JSON:', err);
-          // Fallback suggestions if parsing fails
-          setSuggestions([
-            { id: '1', name: 'Cough', description: 'Persistent, dry cough' },
-            { id: '2', name: 'Coughing up blood', description: 'Hemoptysis' },
-            { id: '3', name: 'Coughing phlegm', description: 'Productive cough with mucus' },
-            { id: '4', name: 'Night cough', description: 'Coughing that worsens at night' }
-          ]);
+        // Validate the parsed data structure
+        if (!Array.isArray(parsedSymptoms)) {
+          throw new Error('API response is not an array');
         }
-      } else {
-        // Fallback suggestions if API call fails
+
+        // Validate each symptom object
+        const validSymptoms = parsedSymptoms.filter(symptom => 
+          typeof symptom === 'object' &&
+          typeof symptom.id === 'string' &&
+          typeof symptom.name === 'string'
+        );
+
+        if (validSymptoms.length === 0) {
+          throw new Error('No valid symptoms found in response');
+        }
+
+        setSuggestions(validSymptoms);
+      } catch (err) {
+        console.error('Error parsing symptoms JSON:', err);
+        toast({
+          title: "Error",
+          description: "Failed to parse symptom suggestions. Please try again.",
+          variant: "destructive"
+        });
+        // Fallback suggestions if parsing fails
         setSuggestions([
           { id: '1', name: 'Cough', description: 'Persistent, dry cough' },
           { id: '2', name: 'Coughing up blood', description: 'Hemoptysis' },
@@ -114,6 +139,11 @@ const SymptomChecker: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching symptom suggestions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch symptom suggestions. Please try again.",
+        variant: "destructive"
+      });
       // Fallback suggestions if API call errors
       setSuggestions([
         { id: '1', name: 'Cough', description: 'Persistent, dry cough' },

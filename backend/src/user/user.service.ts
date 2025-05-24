@@ -13,28 +13,13 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(name: string, email: string, password: string): Promise<User> {
-    const existingUser = await this.userRepository.findOne({ where: { email } });
-    if (existingUser) {
-      throw new ConflictException('Email already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
+  async create(userData: Partial<User>): Promise<User> {
+    const user = this.userRepository.create(userData);
     return this.userRepository.save(user);
   }
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async findById(id: string): Promise<User> {
@@ -45,8 +30,29 @@ export class UserService {
     return user;
   }
 
+  async findByVerificationToken(token: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { emailVerificationToken: token },
+    });
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { passwordResetToken: token },
+    });
+  }
+
+  async update(id: string, userData: Partial<User>): Promise<User> {
+    await this.userRepository.update(id, userData);
+    return this.findById(id);
+  }
+
   async generatePasswordResetToken(email: string): Promise<string> {
     const user = await this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
     const resetToken = uuidv4();
     const resetExpires = new Date();
     resetExpires.setHours(resetExpires.getHours() + 1); // Token expires in 1 hour

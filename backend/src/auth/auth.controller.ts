@@ -1,5 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -14,8 +15,12 @@ export class AuthController {
     return this.authService.register(name, email, password);
   }
 
+  @Get('verify-email/:token')
+  async verifyEmail(@Param('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
   @Post('login')
-  @HttpCode(HttpStatus.OK)
   async login(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -24,13 +29,11 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body('email') email: string) {
     return this.authService.forgotPassword(email);
   }
 
   @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
   async resetPassword(
     @Body('token') token: string,
     @Body('newPassword') newPassword: string,

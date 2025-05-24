@@ -13,19 +13,7 @@ export class DrugsService {
   async getDrugsByFirstLetter(letter: string) {
     console.log(`Fetching drugs starting with letter: ${letter}`);
     
-    // 1. Check local DB
-    const cached = await this.drugRepository.find({
-      where: { name: ILike(`${letter}%`) },
-      order: { name: 'ASC' }
-    });
-    console.log(`Found ${cached.length} drugs in cache`);
-    
-    if (cached.length > 0) {
-      console.log('Returning cached drugs:', cached.map(d => d.name));
-      return cached.map(d => d.name);
-    }
-
-    // 2. Fetch from OpenFDA with increased limit
+    // 1. Fetch from OpenFDA with increased limit
     const brandNameUrl = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:${letter}*&limit=100`;
     const genericNameUrl = `https://api.fda.gov/drug/label.json?search=openfda.generic_name:${letter}*&limit=100`;
     
@@ -80,12 +68,20 @@ export class DrugsService {
           if (!name || typeof name !== 'string' || name.trim() === '') {
             return false;
           }
+          
+          const trimmedName = name.trim();
+          
+          // Ensure the drug name actually starts with the requested letter
+          if (!trimmedName.toLowerCase().startsWith(letter.toLowerCase())) {
+            return false;
+          }
+          
           // Filter out non-drug names (like "Attitude Diaper Cream")
-          if (name.toLowerCase().includes('cream') || 
-              name.toLowerCase().includes('diaper') || 
-              name.toLowerCase().includes('lotion') ||
-              name.toLowerCase().includes('shampoo') ||
-              name.toLowerCase().includes('soap')) {
+          if (trimmedName.toLowerCase().includes('cream') || 
+              trimmedName.toLowerCase().includes('diaper') || 
+              trimmedName.toLowerCase().includes('lotion') ||
+              trimmedName.toLowerCase().includes('shampoo') ||
+              trimmedName.toLowerCase().includes('soap')) {
             return false;
           }
           return true;
@@ -96,7 +92,13 @@ export class DrugsService {
       console.log(`Total unique drugs after deduplication: ${uniqueDrugs.length}`);
       console.log('First few drugs after deduplication:', uniqueDrugs.slice(0, 5));
 
-      // 3. Save to DB
+      // 2. Update the database with new results
+      // First, delete existing entries for this letter
+      await this.drugRepository.delete({
+        name: ILike(`${letter}%`)
+      });
+      
+      // Then save the new results
       await this.drugRepository.save(
         uniqueDrugs.map(name => ({ name }))
       );
@@ -104,7 +106,13 @@ export class DrugsService {
       return uniqueDrugs;
     } catch (error) {
       console.error('Error fetching drugs:', error);
-      throw error;
+      // If API fails, try to get from cache
+      const cached = await this.drugRepository.find({
+        where: { name: ILike(`${letter}%`) },
+        order: { name: 'ASC' }
+      });
+      console.log(`Falling back to cache, found ${cached.length} drugs`);
+      return cached.map(d => d.name);
     }
   }
 

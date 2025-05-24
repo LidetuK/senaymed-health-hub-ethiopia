@@ -24,6 +24,21 @@ export class User {
   @Exclude()
   resetPasswordExpires: Date;
 
+  @Column({ default: false })
+  isEmailVerified: boolean;
+
+  @Column({ nullable: true })
+  emailVerificationToken: string;
+
+  @Column({ nullable: true })
+  emailVerificationTokenExpires: Date;
+
+  @Column({ nullable: true })
+  passwordResetToken: string;
+
+  @Column({ nullable: true })
+  passwordResetTokenExpires: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
